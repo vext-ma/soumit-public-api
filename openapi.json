@@ -3,7 +3,16 @@
   "info": {
     "title": "Soumit Marchés Publics & Appels d'Offres API",
     "description": "Public search and retrieval API for Moroccan public and private tenders, procurement facts, and AI qualification under Décret n° 2-22-431. Supports API Key authentication (Bearer token or X-API-Key), idempotent mutating operations with Idempotency-Key headers for safe retry behavior, x402 payment-required machine-readable payment metadata, and Model Context Protocol (MCP) streamable HTTP integration at /api/mcp.",
-    "version": "1.2.0"
+    "version": "1.3.0",
+    "contact": {
+      "name": "Soumit Intelligence API Team (VEXT AI)",
+      "email": "contact@soumit.ma",
+      "url": "https://soumit.ma"
+    },
+    "x-logo": {
+      "url": "https://soumit.ma/soumit-logo.png",
+      "altText": "Soumit Logo"
+    }
   },
   "servers": [
     {
@@ -14,6 +23,7 @@
   "paths": {
     "/api/mcp": {
       "get": {
+        "operationId": "getMcpDiscovery",
         "summary": "MCP Server Discovery and Info",
         "description": "Model Context Protocol (MCP) streamable HTTP discovery endpoint and capabilities.",
         "responses": {
@@ -23,6 +33,7 @@
         }
       },
       "post": {
+        "operationId": "executeMcpJsonRpc",
         "summary": "Execute MCP Tool, Resource, or Prompt",
         "description": "JSON-RPC 2.0 handler for Model Context Protocol tools and actions.",
         "parameters": [
@@ -56,6 +67,7 @@
     },
     "/api/tenders": {
       "get": {
+        "operationId": "searchPublicTenders",
         "summary": "List and search public tenders",
         "description": "Retrieve a paginated list of Moroccan public tenders, with filtering by query, category, sector, region, buyer, status, score, and deadline.",
         "parameters": [
@@ -245,6 +257,7 @@
     },
     "/api/tenders/{id}": {
       "get": {
+        "operationId": "getPublicTenderById",
         "summary": "Get tender details",
         "description": "Retrieve normalized procurement facts, workflow status, and analysis details for a single tender.",
         "parameters": [
@@ -314,6 +327,7 @@
     },
     "/api/buyers/payment-delays": {
       "get": {
+        "operationId": "getBuyerPaymentDelays",
         "summary": "Moroccan public buyer payment delay discipline (Loi n° 69-21)",
         "description": "Query official payment delay metrics from the Moroccan Observatoire des Délais de Paiement (ODP) and Law 69-21.",
         "parameters": [
@@ -341,6 +355,7 @@
     },
     "/api/v1/barometer": {
       "get": {
+        "operationId": "getProcurementBarometer",
         "summary": "National macroeconomic procurement barometer",
         "description": "Retrieve national statistics on public procurement volume in Morocco, total budget engaged in MAD, and Article 148 SME quota metrics.",
         "responses": {
