@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "soumit": {
+      "command": "node",
+      "args": ["mcp-server/dist/index.js"],
+      "env": {
+        "SOUMIT_API_URL": "https://soumit.ma",
+        "SOUMIT_API_KEY": ""
+      }
+    }
+  }
+}

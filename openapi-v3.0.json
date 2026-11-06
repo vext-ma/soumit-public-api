@@ -1,0 +1,78 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Soumit Marchés Publics & Appels d'Offres API (v3.0)",
+    "description": "Public search and intelligence API for Moroccan public procurement under Décret n° 2-22-431 and Loi n° 69-21.",
+    "version": "1.3.0",
+    "contact": {
+      "name": "Soumit Intelligence API Team",
+      "email": "contact@soumit.ma",
+      "url": "https://soumit.ma"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://soumit.ma",
+      "description": "Soumit Official Production Server"
+    }
+  ],
+  "paths": {
+    "/api/v1/tenders": {
+      "get": {
+        "summary": "Search public tenders in Morocco",
+        "operationId": "v3SearchTenders",
+        "parameters": [
+          { "name": "q", "in": "query", "schema": { "type": "string" }, "description": "Keyword search" },
+          { "name": "sector", "in": "query", "schema": { "type": "string" }, "description": "Sector (travaux, fournitures, services, sante, it)" },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 }, "description": "Result count" }
+        ],
+        "responses": {
+          "200": { "description": "Tenders result list" }
+        }
+      }
+    },
+    "/api/v1/tenders/{id}": {
+      "get": {
+        "summary": "Get tender details and specifications",
+        "operationId": "v3GetTenderDetails",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" }, "description": "Tender ID" }
+        ],
+        "responses": {
+          "200": { "description": "Tender full details" }
+        }
+      }
+    },
+    "/api/buyers/payment-delays": {
+      "get": {
+        "summary": "Moroccan public buyer payment delays (Loi 69-21)",
+        "operationId": "v3GetPaymentDelays",
+        "parameters": [
+          { "name": "q", "in": "query", "schema": { "type": "string" }, "description": "Buyer name or acronym" },
+          { "name": "risk", "in": "query", "schema": { "type": "string" }, "description": "Risk level (low, moderate, high, critical)" }
+        ],
+        "responses": {
+          "200": { "description": "Buyer payment delay telemetry" }
+        }
+      }
+    },
+    "/api/v1/barometer": {
+      "get": {
+        "summary": "Morocco public procurement barometer",
+        "operationId": "v3GetBarometer",
+        "responses": {
+          "200": { "description": "Macroeconomic indicators" }
+        }
+      }
+    },
+    "/api/mcp": {
+      "post": {
+        "summary": "JSON-RPC 2.0 Model Context Protocol Endpoint",
+        "operationId": "v3McpJsonRpc",
+        "responses": {
+          "200": { "description": "MCP response" }
+        }
+      }
+    }
+  }
+}

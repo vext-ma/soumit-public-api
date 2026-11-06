@@ -1,0 +1,532 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Soumit Marchés Publics & Appels d'Offres API",
+    "description": "Public search and retrieval API for Moroccan public and private tenders, procurement facts, and AI qualification under Décret n° 2-22-431. Supports API Key authentication (Bearer token or X-API-Key), idempotent mutating operations with Idempotency-Key headers for safe retry behavior, x402 payment-required machine-readable payment metadata, and Model Context Protocol (MCP) streamable HTTP integration at /api/mcp.",
+    "version": "1.2.0"
+  },
+  "servers": [
+    {
+      "url": "https://soumit.ma",
+      "description": "Production Server"
+    }
+  ],
+  "paths": {
+    "/api/mcp": {
+      "get": {
+        "summary": "MCP Server Discovery and Info",
+        "description": "Model Context Protocol (MCP) streamable HTTP discovery endpoint and capabilities.",
+        "responses": {
+          "200": {
+            "description": "MCP Server Information"
+          }
+        }
+      },
+      "post": {
+        "summary": "Execute MCP Tool, Resource, or Prompt",
+        "description": "JSON-RPC 2.0 handler for Model Context Protocol tools and actions.",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": false,
+            "description": "Unique key (UUIDv4) for safe retries and idempotent task execution.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON-RPC 2.0 result"
+          },
+          "402": {
+            "description": "Payment Required for premium queries (x402 payment-required metadata)",
+            "headers": {
+              "Payment-Required": {
+                "schema": {
+                  "type": "string"
+                },
+                "description": "Machine-readable x402 payment requirements"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tenders": {
+      "get": {
+        "summary": "List and search public tenders",
+        "description": "Retrieve a paginated list of Moroccan public tenders, with filtering by query, category, sector, region, buyer, status, score, and deadline.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Text search query across title, buyer, and category."
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            },
+            "description": "Number of records to return (1-100)."
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            },
+            "description": "Number of records to skip for pagination."
+          },
+          {
+            "name": "active_only",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            },
+            "description": "Filter to tenders whose deadline has not expired."
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by business category or nature (e.g., fournitures, services, travaux)."
+          },
+          {
+            "name": "sector",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by economic sector context or industry taxonomy."
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by Moroccan administrative region."
+          },
+          {
+            "name": "buyer_key",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by canonical buyer key / identifier."
+          },
+          {
+            "name": "min_score",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number"
+            },
+            "description": "Minimum AI opportunity score."
+          },
+          {
+            "name": "sort_by",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "detected_date",
+                "published_at",
+                "deadline",
+                "opportunity_score",
+                "title"
+              ],
+              "default": "detected_date"
+            },
+            "description": "Field to sort the results by."
+          },
+          {
+            "name": "sort_order",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["ASC", "DESC"],
+              "default": "DESC"
+            },
+            "description": "Sort order direction."
+          },
+          {
+            "name": "lang",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "fr",
+                "en",
+                "es"
+              ],
+              "default": "fr"
+            },
+            "description": "Language for localization."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response containing a list of tenders.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "tenders": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/PublicTender"
+                      }
+                    },
+                    "total": {
+                      "type": "integer",
+                      "description": "Total number of matching tenders."
+                    },
+                    "visible_total": {
+                      "type": "integer"
+                    },
+                    "pipeline_total": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": ["tenders", "total"]
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Anonymous rate limit reached. Sign in for full access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tenders/{id}": {
+      "get": {
+        "summary": "Get tender details",
+        "description": "Retrieve normalized procurement facts, workflow status, and analysis details for a single tender.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The unique ID of the tender"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detailed tender data including normalized procurement facts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicTenderDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid tender ID",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Tender not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Anonymous rate limit reached. Sign in for full access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/buyers/payment-delays": {
+      "get": {
+        "summary": "Moroccan public buyer payment delay discipline (Loi n° 69-21)",
+        "description": "Query official payment delay metrics from the Moroccan Observatoire des Délais de Paiement (ODP) and Law 69-21.",
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" },
+            "description": "Buyer name or acronym (e.g. ONEE, CHU Ibn Sina, Ministère)."
+          },
+          {
+            "name": "risk",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "enum": ["low", "moderate", "high", "critical"] },
+            "description": "Filter by payment risk level."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Buyer payment delay telemetry under Moroccan Law 69-21"
+          }
+        }
+      }
+    },
+    "/api/v1/barometer": {
+      "get": {
+        "summary": "National macroeconomic procurement barometer",
+        "description": "Retrieve national statistics on public procurement volume in Morocco, total budget engaged in MAD, and Article 148 SME quota metrics.",
+        "responses": {
+          "200": {
+            "description": "Macroeconomic public procurement barometer for Morocco"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "PublicTender": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "reference": {
+            "type": ["string", "null"]
+          },
+          "summary": {
+            "type": ["string", "null"]
+          },
+          "buyer": {
+            "type": ["string", "null"]
+          },
+          "buyer_normalized_name": {
+            "type": ["string", "null"]
+          },
+          "buyer_canonical_key": {
+            "type": ["string", "null"]
+          },
+          "sector": {
+            "type": ["string", "null"]
+          },
+          "category": {
+            "type": ["string", "null"]
+          },
+          "procurement_category": {
+            "type": ["string", "null"]
+          },
+          "region": {
+            "type": ["string", "null"]
+          },
+          "city": {
+            "type": ["string", "null"]
+          },
+          "budget": {
+            "type": ["number", "null"]
+          },
+          "budget_estimated": {
+            "type": ["number", "null"]
+          },
+          "currency": {
+            "type": ["string", "null"]
+          },
+          "deadline": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "published_at": {
+            "type": ["string", "null"],
+            "format": "date-time"
+          },
+          "detected_date": {
+            "type": ["string", "null"]
+          },
+          "status": {
+            "type": ["string", "null"]
+          },
+          "signal_type": {
+            "type": ["string", "null"]
+          },
+          "opportunity_score": {
+            "type": ["number", "null"]
+          },
+          "opportunity_tier": {
+            "type": ["string", "null"]
+          },
+          "opportunity_reasons": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "procurement_facts": {
+            "type": "object"
+          }
+        },
+        "required": ["id", "title"]
+      },
+      "PublicTenderDetail": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PublicTender"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "link": {
+                "type": ["string", "null"],
+                "format": "uri"
+              },
+              "dce_download_url": {
+                "type": ["string", "null"]
+              },
+              "dce_validation_status": {
+                "type": ["string", "null"]
+              },
+              "metadata": {
+                "type": ["object", "null"]
+              },
+              "procurement_facts": {
+                "type": "object",
+                "properties": {
+                  "source_truth": {
+                    "type": ["object", "null"]
+                  },
+                  "buyer_identifier": {
+                    "type": ["string", "null"]
+                  },
+                  "cpv_codes": {
+                    "type": "array",
+                    "items": { "type": "string" }
+                  },
+                  "site_visit_mandatory": {
+                    "type": ["boolean", "null"]
+                  },
+                  "site_visit_date": {
+                    "type": ["string", "null"]
+                  },
+                  "contract_duration": {
+                    "type": ["string", "null"]
+                  },
+                  "execution_location": {
+                    "type": ["string", "null"]
+                  }
+                }
+              },
+              "analysis_status": {
+                "type": ["string", "null"]
+              },
+              "analysis_quality_summary": {
+                "type": ["object", "null"]
+              }
+            }
+          }
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "correlationId": {
+            "type": "string"
+          }
+        },
+        "required": ["error"]
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "API Key",
+        "description": "API Key passed as Bearer token in the Authorization header"
+      },
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "API Key passed directly in the X-API-Key header"
+      }
+    },
+    "headers": {
+      "Idempotency-Key": {
+        "description": "Unique key (UUIDv4) to ensure safe retries and idempotent request processing.",
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      }
+    }
+  }
+}

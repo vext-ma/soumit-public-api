@@ -1,0 +1,156 @@
+{
+  "info": {
+    "_postman_id": "7b8e1f2a-8c3d-4e5f-9a0b-1c2d3e4f5a6b",
+    "name": "Soumit — Marchés Publics & Appels d'Offres Maroc API",
+    "description": "Suite d'APIs publiques et professionnelles pour l'intelligence des marchés publics au Maroc (Portail des Marchés Publics, Décret n° 2-22-431, Loi n° 69-21 sur les délais de paiement, bordereaux de prix BPU et procès-verbaux d'attribution).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://soumit.ma",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Appels d'Offres (Tenders)",
+      "item": [
+        {
+          "name": "Rechercher des appels d'offres",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{apiKey}}", "disabled": true }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tenders?q=scanner&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "tenders"],
+              "query": [
+                { "key": "q", "value": "scanner", "description": "Mot-clé de recherche" },
+                { "key": "sector", "value": "sante", "disabled": true },
+                { "key": "limit", "value": "10" }
+              ]
+            },
+            "description": "Recherche textuelle et multicritères des avis d'appels d'offres publics marocains récents."
+          }
+        },
+        {
+          "name": "Consulter le détail d'un appel d'offres",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/tenders/tender-maroc-sample",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "tenders", "tender-maroc-sample"]
+            },
+            "description": "Fiche complète : estimation budgétaire, cautionnement provisoire (Art. 23), critères éliminatoires, adresse de dépôt."
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Intelligence Acheteurs & Délais de Paiement (Loi 69-21)",
+      "item": [
+        {
+          "name": "Consulter les délais de paiement d'un acheteur",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/buyers/payment-delays?q=onee",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "buyers", "payment-delays"],
+              "query": [
+                { "key": "q", "value": "onee", "description": "Nom ou acronyme de l'acheteur public" },
+                { "key": "risk", "value": "low", "disabled": true }
+              ]
+            },
+            "description": "Données officielles de l'Observatoire des Délais de Paiement (ODP) et conformité au plafond légal de 60 jours."
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Baromètre Macroéconomique de la Commande Publique",
+      "item": [
+        {
+          "name": "Obtenir le baromètre national",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/barometer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "barometer"]
+            },
+            "description": "Volume d'affaires engagé en Dirhams (MAD), ventilation régionale et analyse des quotas TPME (Art. 148)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Model Context Protocol (MCP) Streamable HTTP",
+      "item": [
+        {
+          "name": "Découverte du serveur MCP (GET)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/mcp",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "mcp"]
+            },
+            "description": "Retourne les capacités du serveur, les 14 outils enregistrés, les ressources et les prompts pour Claude et Cursor."
+          }
+        },
+        {
+          "name": "Vérifier la conformité d'une offre financière (Art. 44 & 45)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 1,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"check_regulatory_compliance\",\n    \"arguments\": {\n      \"estimated_amount_ht\": 1000000,\n      \"proposed_amount_ht\": 720000,\n      \"sector_type\": \"fournitures\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/mcp",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "mcp"]
+            },
+            "description": "Calcul algorithmique de conformité : détection d'offre anormalement basse ou excessive sous le Décret n° 2-22-431."
+          }
+        },
+        {
+          "name": "Crash-test dossier administratif (Art. 27)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"jsonrpc\": \"2.0\",\n  \"id\": 2,\n  \"method\": \"tools/call\",\n  \"params\": {\n    \"name\": \"audit_submission_checklist\",\n    \"arguments\": {\n      \"tender_reference\": \"14/CHU/2026\",\n      \"has_provisional_guarantee\": true,\n      \"provisional_guarantee_amount\": 50000,\n      \"has_declaration_on_honor\": true,\n      \"has_site_visit_certificate\": true\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/mcp",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "mcp"]
+            },
+            "description": "Audit préventif des motifs d'élimination d'office à l'ouverture des plis."
+          }
+        }
+      ]
+    }
+  ]
+}

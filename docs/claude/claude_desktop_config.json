@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "soumit-remote": {
+      "command": "npx",
+      "args": ["-y", "soumit-mcp"],
+      "env": {
+        "SOUMIT_API_URL": "https://soumit.ma",
+        "SOUMIT_API_KEY": ""
+      }
+    },
+    "soumit-direct": {
+      "url": "https://soumit.ma/api/mcp",
+      "transport": "streamable-http"
+    }
+  }
+}

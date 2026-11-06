@@ -1,0 +1,51 @@
+{
+  "name": "@vext-ma/soumit-public-api",
+  "version": "1.3.0",
+  "description": "Official Public API, Model Context Protocol (MCP) server, and Agent toolkits for Soumit (soumit.ma) — Moroccan Public Procurement Intelligence by VEXT AI",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "soumit-mcp": "./dist/index.js",
+    "soumit-public-api": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "node --test test/*.test.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "marches-publics",
+    "maroc",
+    "morocco",
+    "soumit",
+    "claude",
+    "chatgpt",
+    "cursor",
+    "windsurf",
+    "decret-2-22-431",
+    "loi-69-21",
+    "tenders",
+    "vext"
+  ],
+  "author": "VEXT AI <contact@vext.ma> (https://vext.ma)",
+  "homepage": "https://soumit.ma",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vext-ma/soumit-public-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vext-ma/soumit-public-api/issues"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.0"
+  }
+}

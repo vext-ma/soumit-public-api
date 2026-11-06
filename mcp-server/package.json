@@ -1,0 +1,33 @@
+{
+  "name": "soumit-mcp",
+  "version": "1.0.0",
+  "description": "Serveur officiel Model Context Protocol (MCP) pour Soumit Intelligence Engine - Marchés Publics Maroc",
+  "main": "dist/index.js",
+  "bin": {
+    "soumit-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc 2>/dev/null || ../node_modules/.bin/tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx index.ts"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "marches-publics",
+    "maroc",
+    "soumit",
+    "claude",
+    "tenders"
+  ],
+  "author": "Soumit Intelligence Team",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.0"
+  }
+}

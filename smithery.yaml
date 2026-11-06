@@ -1,0 +1,11 @@
+# Smithery configuration for Soumit Moroccan Public Procurement MCP Server
+# Registry URL: https://smithery.ai/server/soumit-mcp
+startCommand:
+  type: stdio
+  config:
+    command: node
+    args:
+      - mcp-server/dist/index.js
+    env:
+      SOUMIT_API_URL: https://soumit.ma
+      SOUMIT_API_KEY: ""
